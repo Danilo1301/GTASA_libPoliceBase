@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "CleoFunctions.h"
 #include "Mod.h"
+#include "Vehicles.h"
 
 extern IMenuVSL* menuVSL;
 
@@ -14,6 +15,8 @@ void WindowTest::Create()
 
 	auto window = m_Window = menuVSL->AddWindow();
     window->m_Title = "Test Window";
+
+    window->AddText("Vehicles: " + std::to_string(Vehicles::GetDefinedVehicles().size()), CRGBA(255, 255, 255));
 
     auto close = window->AddButton("> ~r~Close", CRGBA(0, 0, 0, 0));
     close->onClick = [window]() {

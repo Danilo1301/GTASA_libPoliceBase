@@ -907,3 +907,53 @@ int CleoFunctions::CreateMarker(float x, float y, float z, int color, int displa
     SET_MARKER_SIZE(blip, size);
     return blip;
 }
+
+CVector CleoFunctions::GetCarPositionWithOffset(int hVehicle, CVector offset)
+{
+    float x = 0, y = 0, z = 0;
+    STORE_COORDS_FROM_CAR_WITH_OFFSET(hVehicle, offset.x, offset.y, offset.z, &x, &y, &z);
+
+    return CVector(x, y, z);
+}
+
+CVector CleoFunctions::GetCarPosition(int hVehicle)
+{
+    return GetCarPositionWithOffset(hVehicle, CVector(0, 0, 0));
+}
+
+CVector CleoFunctions::GetPedPositionWithOffset(int hPed, CVector offset)
+{
+    float x = 0, y = 0, z = 0;
+    STORE_COORDS_FROM_ACTOR_WITH_OFFSET(hPed, offset.x, offset.y, offset.z, &x, &y, &z);
+
+    return CVector(x, y, z);
+}
+
+CVector CleoFunctions::GetPedPosition(int hPed)
+{
+    return GetPedPositionWithOffset(hPed, CVector(0, 0, 0));
+}
+
+int CleoFunctions::GetPlayerActor()
+{
+    return GET_PLAYER_ACTOR(0);
+}
+
+double CleoFunctions::DistanceFromPed(int hPed, CVector position)
+{
+    auto pedPosition = GetPedPosition(hPed);
+    auto distance = DistanceBetweenPoints(pedPosition, position);
+    return distance;
+}
+
+bool CleoFunctions::IsActorAliveAndDefined(int hPed)
+{
+    return ACTOR_DEFINED(hPed) && !ACTOR_DEAD(hPed);
+}
+
+int CleoFunctions::GetVehiclePedIsUsing(int hPed)
+{
+    if(!IS_CHAR_IN_ANY_CAR(hPed)) return 0;
+
+    return ACTOR_USED_CAR(hPed);
+}

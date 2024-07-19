@@ -27,15 +27,6 @@ public:
       **/
     static bool CalculateProbability(float chance);
     
-    static CVector GetCarPositionWithOffset(int hVehicle, CVector offset);
-    static CVector GetCarPosition(int hVehicle);
-    static CVector GetPedPositionWithOffset(int hPed, CVector offset);
-    static CVector GetPedPosition(int hPed);
-    static int GetPlayerActor();
-    static double DistanceFromPed(int hPed, CVector position);
-    static bool IsActorAliveAndDefined(int hPed);
-    static int GetVehiclePedIsUsing(int hPed);
-
     static void ToggleMod(bool enabled);
     static void ShowCredits();
 };

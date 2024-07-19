@@ -4,8 +4,11 @@
 #include "Log.h"
 #include "CleoFunctions.h"
 #include "ModConfig.h"
+#include "Vehicles.h"
 
 #include "windows/WindowTest.h"
+
+#include "systems/CarsLocations.h"
 
 unsigned int Mod::m_TimePassed = 0;
 bool Mod::m_Enabled = false;
@@ -22,9 +25,17 @@ void Mod::Update(int dt)
 
     CleoFunctions::Update(dt);
 
+    Log::Level(LOG_LEVEL::LOG_UPDATE) << "vehicles" << std::endl;
+
+    Vehicles::Update(dt);
+
     Log::Level(LOG_LEVEL::LOG_UPDATE) << "widgets" << std::endl;
 
     Widgets::Update(dt);
+
+    Log::Level(LOG_LEVEL::LOG_UPDATE) << "car locations" << std::endl;
+
+    CarsLocations::Update();
     
     if(CleoFunctions::PLAYER_DEFINED(0))
     {
@@ -49,7 +60,7 @@ void Mod::Update(int dt)
 
 void Mod::Init()
 {
-    
+    CarsLocations::Init();
 }
 
 void Mod::CleoInit()
@@ -64,6 +75,10 @@ void Mod::RequestModelsToLoad()
     LoadRequestedModels([] () {
         Log::Level(LOG_LEVEL::LOG_BOTH) << "Mod: Models loaded!" << std::endl;
     });
+
+    Log::Level(LOG_LEVEL::LOG_BOTH) << "Loading models..." << std::endl;
+
+    RequestModelsToLoad();
 }
 
 void Mod::LoadRequestedModels(std::function<void()> callback)

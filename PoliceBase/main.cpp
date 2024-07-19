@@ -27,6 +27,14 @@ IMenuVSL* menuVSL = NULL;
 
 // ---------------------------------------
 
+uintptr_t* pVehiclePool = 0;
+uintptr_t* pPedPool = 0;
+
+int (*GetVehicleRef)(int);
+void* (*GetVehicleFromRef)(int);
+int (*GetPedRef)(int);
+void* (*GetPedFromRef)(int);
+
 // ---------------------------------------
 
 DECL_HOOK(void*, UpdateGameLogic, uintptr_t a1)
@@ -148,11 +156,16 @@ extern "C" void OnModLoad()
 
     Log::Level(LOG_LEVEL::LOG_BOTH) << "Finding symbols..." << std::endl;
     
-    //void* hGTASA = aml->GetLibHandle("libGTASA.so"); crashes the game
     void* hGTASA = dlopen("libGTASA.so", RTLD_LAZY);
     uintptr_t gameAddr = (uintptr_t)(cleo->GetMainLibraryLoadAddress());
 
-    Log::Level(LOG_LEVEL::LOG_BOTH) << "hGTASA: " << hGTASA << std::endl;
+    SET_TO(pVehiclePool, aml->GetSym(hGTASA, "_ZN6CPools15ms_pVehiclePoolE"));
+    SET_TO(pPedPool, aml->GetSym(hGTASA, "_ZN6CPools11ms_pPedPoolE"));
+
+    SET_TO(GetVehicleRef, aml->GetSym(hGTASA, "_ZN6CPools13GetVehicleRefEP8CVehicle"));
+    SET_TO(GetVehicleFromRef, aml->GetSym(hGTASA, "_ZN6CPools10GetVehicleEi"));
+    SET_TO(GetPedRef, aml->GetSym(hGTASA, "_ZN6CPools9GetPedRefEP4CPed"));
+    SET_TO(GetPedFromRef, aml->GetSym(hGTASA, "_ZN6CPools6GetPedEi"));
 
     HOOKPLT(UpdateGameLogic, gameAddr + 0x66FE58);
     

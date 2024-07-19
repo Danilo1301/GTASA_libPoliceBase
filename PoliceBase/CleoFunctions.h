@@ -1,6 +1,6 @@
 #pragma once
 
-#include <functional>
+#include "pch.h"
 
 enum WAIT_FN_STATE {
     WAIT_FN_NONE,
@@ -161,4 +161,12 @@ public:
     static void LOAD_ANIMATION(const char* animationFile);
 
     static int CreateMarker(float x, float y, float z, int color, int display, int size);
+    static CVector GetCarPositionWithOffset(int hVehicle, CVector offset);
+    static CVector GetCarPosition(int hVehicle);
+    static CVector GetPedPositionWithOffset(int hPed, CVector offset);
+    static CVector GetPedPosition(int hPed);
+    static int GetPlayerActor();
+    static double DistanceFromPed(int hPed, CVector position);
+    static bool IsActorAliveAndDefined(int hPed);
+    static int GetVehiclePedIsUsing(int hPed);
 };
