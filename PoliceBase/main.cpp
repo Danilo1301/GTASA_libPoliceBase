@@ -25,6 +25,9 @@ ISAUtils* sautils = NULL;
 #include "menu/IMenuVSL.h"
 IMenuVSL* menuVSL = NULL;
 
+#include "IMultiRemap.h"
+IMultiRemap* multiRemap = NULL;
+
 // ---------------------------------------
 
 uintptr_t* pVehiclePool = 0;
@@ -63,6 +66,23 @@ std::string CheckModVersion(std::vector<std::string> GUIDs, std::vector<std::str
         }
     }
     return "";
+}
+
+template <typename T>
+T* LoadInterface(T** out, std::string name)
+{
+    Log::Level(LOG_LEVEL::LOG_BOTH) << "Loading interface: " << name << "..." << std::endl;
+
+    void* interface = GetInterface(name.c_str());
+
+    Log::Level(LOG_LEVEL::LOG_BOTH) << "Interface: " << interface << std::endl;
+
+    *out = static_cast<T*>(interface);
+
+    if (*out) Log::Level(LOG_LEVEL::LOG_BOTH) << name << " loaded" << std::endl;
+    else Log::Level(LOG_LEVEL::LOG_BOTH) << name << " was not loaded" << std::endl;
+
+    return *out;
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -107,23 +127,14 @@ extern "C" void OnModLoad()
     cfg->Bind("GitHub", "", "About")->SetString("https://github.com/Danilo1301"); cfg->ClearLast();
     cfg->Save();
 
-    //Menu VSL
-    Log::Level(LOG_LEVEL::LOG_BOTH) << "Loading MenuVSL..." << std::endl;
-    menuVSL = (IMenuVSL*)GetInterface("MenuVSL");
-    if (menuVSL) Log::Level(LOG_LEVEL::LOG_BOTH) << "MenuVSL loaded" << std::endl;
-    else Log::Level(LOG_LEVEL::LOG_BOTH) << "MenuVSL was not loaded" << std::endl;
+    //interfaces
 
-    //CLEO
-    Log::Level(LOG_LEVEL::LOG_BOTH) << "Loading CLEO..." << std::endl;
-    cleo = (cleo_ifs_t*)GetInterface("CLEO");
-    if (cleo) Log::Level(LOG_LEVEL::LOG_BOTH) << "CLEO loaded" << std::endl;
-    else Log::Level(LOG_LEVEL::LOG_BOTH) << "CLEO was not loaded" << std::endl;
+    LoadInterface(&cleo, "CLEO");
+    LoadInterface(&sautils, "SAUtils");
+    LoadInterface(&menuVSL, "MenuVSL");
+    LoadInterface(&multiRemap, "MultiRemap");
 
-    //SAUtils
-    Log::Level(LOG_LEVEL::LOG_BOTH) << "Loading SAUtils..." << std::endl;
-    sautils = (ISAUtils*)GetInterface("SAUtils");
-    if (sautils) Log::Level(LOG_LEVEL::LOG_BOTH) << "SAUtils loaded" << std::endl;
-    else Log::Level(LOG_LEVEL::LOG_BOTH) << "SAUtils was not loaded" << std::endl;
+    Log::Level(LOG_LEVEL::LOG_BOTH) << "cleo: " << cleo << std::endl;
 
     if(sautils)
     {

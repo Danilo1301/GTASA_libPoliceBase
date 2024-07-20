@@ -15,7 +15,8 @@ public:
     static bool HasVehicleHandle(int hVehicle);
     static Vehicle* TryCreateVehicle(int hVehicle);
     static Vehicle* GetVehicleByHandle(int hVehicle);
-
+    static void RemoveVehicle(int hVehicle);
+    
     static std::vector<Vehicle*> GetAllCarsInSphere(CVector position, float radius);
     static int GetRandomCarInSphere(CVector position, float radius);
     static int GetClosestCar(CVector position, float radius);

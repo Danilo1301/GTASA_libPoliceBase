@@ -21,40 +21,48 @@ void Mod::Update(int dt)
 {
     m_TimePassed += dt;
 
-    Log::Level(LOG_LEVEL::LOG_UPDATE) << "cleofunctions -----------------" << std::endl;
+    Log::Level(LOG_LEVEL::LOG_UPDATE) << "---- cleofunctions" << std::endl;
 
     CleoFunctions::Update(dt);
 
-    Log::Level(LOG_LEVEL::LOG_UPDATE) << "vehicles" << std::endl;
+    //
 
-    Vehicles::Update(dt);
-
-    Log::Level(LOG_LEVEL::LOG_UPDATE) << "widgets" << std::endl;
-
-    Widgets::Update(dt);
-
-    Log::Level(LOG_LEVEL::LOG_UPDATE) << "car locations" << std::endl;
-
-    CarsLocations::Update(dt);
-    
     if(CleoFunctions::PLAYER_DEFINED(0))
     {
         if(!hasCleoInitialized)
         {
             hasCleoInitialized = true;
-
             CleoInit();
         }
     }
 
-    if(!WindowTest::m_Window)
+    bool canUpdate = true;
+    if(!hasCleoInitialized) canUpdate = false;
+    if(!CheckModelsLoaded()) canUpdate = false;
+
+    if(canUpdate)
     {
-        if(Widgets::IsWidgetJustPressed(40)) //40 = blue joystick button
+        Log::Level(LOG_LEVEL::LOG_UPDATE) << "vehicles" << std::endl;
+
+        Vehicles::Update(dt);
+
+        Log::Level(LOG_LEVEL::LOG_UPDATE) << "widgets" << std::endl;
+
+        Widgets::Update(dt);
+
+        Log::Level(LOG_LEVEL::LOG_UPDATE) << "car locations" << std::endl;
+
+        CarsLocations::Update(dt);
+
+        if(!WindowTest::m_Window)
         {
-            WindowTest::Create();
+            if(Widgets::IsWidgetJustPressed(40)) //40 = blue joystick button
+            {
+                WindowTest::Create();
+            }
         }
     }
-
+    
     Log::Level(LOG_LEVEL::LOG_UPDATE) << "end ---------" << std::endl;
 }
 
@@ -74,7 +82,10 @@ void Mod::CleoInit()
 
 void Mod::RequestModelsToLoad()
 {
-    AddModelToLoad(596); //copcarla
+    for(auto location : CarsLocations::m_Locations)
+    {
+        AddModelToLoad(location.modelId);
+    }
     
     LoadRequestedModels([] () {
         Log::Level(LOG_LEVEL::LOG_BOTH) << "Mod: Models loaded!" << std::endl;

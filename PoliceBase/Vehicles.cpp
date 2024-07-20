@@ -25,6 +25,8 @@ void Vehicles::Update(int dt)
 
 void Vehicles::TryFindNewVehicles()
 {   
+    std::vector<Vehicle*> vehiclesThatExists;
+
     //GET_RANDOM_CAR_IN_SPHERE_NO_SAVE_RECURSIVE
     //https://github.com/AndroidModLoader/GTA_CLEOMod/blob/RUSJJ_CLEO_MOD/cleo4opcodes.cpp
 
@@ -47,13 +49,39 @@ void Vehicles::TryFindNewVehicles()
 
         int ref = GetVehicleRef(ent.AsInt());
 
+        Vehicle* vehicle = NULL;
+
         if(!HasVehicleHandle(ref))
         {
             //Log::Level(LOG_LEVEL::LOG_BOTH) << "Found " << ent.AsInt() << " ref " << ref << " siren " << (sirenOn ? "ON" : "OFF") << std::endl;
             //Log::Level(LOG_LEVEL::LOG_BOTH) << "driver " << driver << std::endl;
 
-            auto vehicle = TryCreateVehicle(ref);
+            TryCreateVehicle(ref);
         }
+
+        vehicle = GetVehicleByHandle(ref);
+
+        vehiclesThatExists.push_back(vehicle);
+    }
+
+    std::vector<int> vehiclesToDelete;
+
+    for(auto p : m_Vehicles)
+    {
+        auto vehicle = p.second;
+
+        auto it = std::find(vehiclesThatExists.begin(), vehiclesThatExists.end(), vehicle);
+
+        if (it == vehiclesThatExists.end())
+        {
+            Log::Level(LOG_LEVEL::LOG_BOTH) << "Could not find vehicle " << vehicle << std::endl;
+            vehiclesToDelete.push_back(vehicle->hVehicle);
+        }
+    }
+
+    for(auto hVehicle : vehiclesToDelete)
+    {
+        RemoveVehicle(hVehicle);
     }
 }
 
@@ -89,6 +117,16 @@ Vehicle* Vehicles::GetVehicleByHandle(int hVehicle)
 {
 	if (!HasVehicleHandle(hVehicle)) return NULL;
 	return m_Vehicles.at(hVehicle);
+}
+
+void Vehicles::RemoveVehicle(int hVehicle)
+{
+    auto vehicle = m_Vehicles[hVehicle];
+
+    Log::Level(LOG_LEVEL::LOG_BOTH) << "Vehicles: Delete vehicle " << hVehicle << ", ref: " << vehicle->pVehicle << ", model: " << vehicle->modelId << " (" << std::to_string(m_Vehicles.size() - 1) << " total)" << std::endl;
+
+    m_Vehicles.erase(hVehicle);
+    delete vehicle;
 }
 
 std::vector<Vehicle*> Vehicles::GetAllCarsInSphere(CVector position, float radius)

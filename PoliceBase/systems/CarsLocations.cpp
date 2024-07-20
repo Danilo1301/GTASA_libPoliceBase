@@ -9,6 +9,9 @@
 #include "menu/IMenuVSL.h"
 extern IMenuVSL* menuVSL;
 
+#include "IMultiRemap.h"
+extern IMultiRemap* multiRemap;
+
 std::vector<CarLocation> CarsLocations::m_Locations;
 
 void CarsLocations::Init()
@@ -28,7 +31,8 @@ void CarsLocations::Update(int dt)
     auto playerActor = CleoFunctions::GetPlayerActor();
     auto playerPosition = CleoFunctions::GetPedPosition(playerActor);
 
-    for (size_t i = 0; i < m_Locations.size(); ++i) {
+    for (size_t i = 0; i < m_Locations.size(); ++i)
+    {
         auto location = &m_Locations[i];
 
         auto position = location->position;
@@ -46,7 +50,7 @@ void CarsLocations::Update(int dt)
                 auto prevVehiclePosition = CleoFunctions::GetCarPosition(location->prevVehicleSpawned);
                 auto distanceFromLastVehicle = DistanceBetweenPoints(position, prevVehiclePosition);
 
-                menuVSL->debug->AddLine("distance: " + std::to_string(distanceFromLastVehicle));
+                //menuVSL->debug->AddLine("distance: " + std::to_string(distanceFromLastVehicle));
 
                 if(distanceFromLastVehicle < 20.0f) canSpawnCar = false;
             }
@@ -56,8 +60,8 @@ void CarsLocations::Update(int dt)
         {
             if(!Vehicles::HasVehicleOfModelIdInArea(location->modelId, location->position, 3.0f))
             {
-                menuVSL->debug->m_Visible = true;
-                menuVSL->debug->AddLine("Spawning car " + std::to_string(location->modelId));
+                //menuVSL->debug->m_Visible = true;
+                //menuVSL->debug->AddLine("Spawning car " + std::to_string(location->modelId));
 
                 auto carHandle = CleoFunctions::CREATE_CAR_AT(location->modelId, position.x, position.y, position.z);
                 auto vehicle = Vehicles::TryCreateVehicle(carHandle);
@@ -67,6 +71,16 @@ void CarsLocations::Update(int dt)
                 CleoFunctions::SET_CAR_Z_ANGLE(carHandle, location->angle);
 
                 location->prevVehicleSpawned = carHandle;
+
+                Log::Level(LOG_LEVEL::LOG_BOTH) << "Trying to set remap..." << std::endl;
+
+                if(multiRemap)
+                {
+                    Log::Level(LOG_LEVEL::LOG_BOTH) << "Setting remap: " << location->remap << std::endl;
+                    multiRemap->SetVehicleRemap(carHandle, location->remap);
+                } else {
+                    Log::Level(LOG_LEVEL::LOG_BOTH) << "Multi remap is not loaded" << std::endl;
+                }
             }
         }
     }

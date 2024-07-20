@@ -4,8 +4,12 @@
 #include "CleoFunctions.h"
 #include "Mod.h"
 #include "Vehicles.h"
+#include "ModConfig.h"
 
 extern IMenuVSL* menuVSL;
+
+#include "IMultiRemap.h"
+extern IMultiRemap* multiRemap;
 
 IWindow* WindowTest::m_Window = NULL;
 
@@ -31,9 +35,20 @@ void WindowTest::Create()
         auto position = CleoFunctions::GetCarPosition(vehicleHandle);
         auto angle = CleoFunctions::GET_CAR_Z_ANGLE(vehicleHandle);
         auto modelId = CleoFunctions::GET_CAR_MODEL(vehicleHandle);
+        std::string remap = "";
+        if(multiRemap) remap = multiRemap->GetVehicleRemap(vehicleHandle);
+        if(remap.size() == 0) remap = "random";
+
+        auto filePath = ModConfig::GetConfigFolder() + "/savedpositions.txt";
+
+        std::ofstream file(filePath, std::ios_base::app);
+        if (file)
+        {
+            file << modelId << " " << position.x << " " << position.y << " " << position.z << " " << angle << " " << remap << std::endl;
+        }
 
         Log::Level(LOG_LEVEL::LOG_BOTH) << "---- SAVED POSITION ----" << std::endl;
-        Log::Level(LOG_LEVEL::LOG_BOTH) << position.x << ", " << position.y << ", " << position.z << ", " << angle << ", " << modelId << std::endl;
+        Log::Level(LOG_LEVEL::LOG_BOTH) << modelId << " " << position.x << " " << position.y << " " << position.z << " " << angle << " " << remap << std::endl;
         Log::Level(LOG_LEVEL::LOG_BOTH) << "------------------------" << std::endl;
         Remove();
     };
