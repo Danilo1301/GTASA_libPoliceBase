@@ -15,6 +15,8 @@
 #include "Mod.h"
 #include "Log.h"
 
+#include "systems/CarsLocations.h"
+
 bool isDirExist(const std::string& path)
 {
     struct stat info;
@@ -33,7 +35,7 @@ bool file_exists(const std::string& name) {
 std::vector<std::string> get_directories_name(const std::string& s)
 {
     std::vector<std::string> r;
-    for (auto& p : std::filesystem::recursive_directory_iterator(s))
+    for (auto& p : std::filesystem::directory_iterator(s))
         if (p.is_directory())
             r.push_back(p.path().filename().string());
     return r;
@@ -42,7 +44,7 @@ std::vector<std::string> get_directories_name(const std::string& s)
 std::vector<std::string> get_files_name(const std::string& s)
 {
     std::vector<std::string> r;
-    for (auto& p : std::filesystem::recursive_directory_iterator(s))
+    for (auto& p : std::filesystem::directory_iterator(s))
         if (!p.is_directory())
             r.push_back(p.path().filename().string());
     return r;
@@ -167,6 +169,11 @@ std::vector<std::string> ModConfig::GetDirectoriesName(std::string path)
     return get_directories_name(path);
 }
 
+std::vector<std::string> ModConfig::GetFilesName(std::string path)
+{
+    return get_files_name(path);
+}
+
 void ModConfig::ConfigDelete(std::string path)
 {
     try {
@@ -233,6 +240,8 @@ void ModConfig::Save()
 void ModConfig::Load()
 {
     MakePaths();
+
+    CarsLocations::Load();
 }
 
 std::string ModConfig::ReadVersionFile()

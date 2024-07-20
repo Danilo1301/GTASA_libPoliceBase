@@ -35,7 +35,7 @@ void Mod::Update(int dt)
 
     Log::Level(LOG_LEVEL::LOG_UPDATE) << "car locations" << std::endl;
 
-    CarsLocations::Update();
+    CarsLocations::Update(dt);
     
     if(CleoFunctions::PLAYER_DEFINED(0))
     {
@@ -66,6 +66,10 @@ void Mod::Init()
 void Mod::CleoInit()
 {
     Log::Level(LOG_LEVEL::LOG_BOTH) << "Cleo init" << std::endl;
+
+    Log::Level(LOG_LEVEL::LOG_BOTH) << "Loading models..." << std::endl;
+
+    RequestModelsToLoad();
 }
 
 void Mod::RequestModelsToLoad()
@@ -75,10 +79,6 @@ void Mod::RequestModelsToLoad()
     LoadRequestedModels([] () {
         Log::Level(LOG_LEVEL::LOG_BOTH) << "Mod: Models loaded!" << std::endl;
     });
-
-    Log::Level(LOG_LEVEL::LOG_BOTH) << "Loading models..." << std::endl;
-
-    RequestModelsToLoad();
 }
 
 void Mod::LoadRequestedModels(std::function<void()> callback)
