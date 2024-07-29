@@ -10,6 +10,9 @@
 
 #include "systems/CarsLocations.h"
 
+#include "menu/IMenuVSL.h"
+extern IMenuVSL* menuVSL;
+
 unsigned int Mod::m_TimePassed = 0;
 bool Mod::m_Enabled = false;
 bool Mod::m_DevModeEnabled = false;
@@ -54,10 +57,12 @@ void Mod::Update(int dt)
 
         CarsLocations::Update(dt);
 
-        if(!WindowTest::m_Window)
+        if(menuVSL)
         {
-            if(Widgets::IsWidgetJustPressed(40)) //40 = blue joystick button
+            if(menuVSL->GetGlobalIntVariable("show_menu_policeBase") == 1)
             {
+                menuVSL->SetGlobalIntVariable("show_menu_policeBase", 0);
+
                 WindowTest::Create();
             }
         }

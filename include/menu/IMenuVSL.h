@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "SimpleGTA.h"
 
@@ -31,4 +32,8 @@ public:
     virtual IWindow* AddWindowOptionsString(std::string title, IWindow* parent, std::string* pString, std::vector<std::string>* options) = 0;
     virtual IWindow* AddWindowMultiOptionsString(std::string title, IWindow* parent, std::vector<std::string>* selectedOptions, std::vector<std::string>* allOptions) = 0;
     virtual IWindow* AddColorWindow(IWindow* parent, CRGBA* color, std::function<void()> onValueChange) = 0;
+
+    /*1.1.1*/
+    virtual void SetGlobalIntVariable(std::string key, int value) = 0;
+    virtual int GetGlobalIntVariable(std::string key) = 0;
 };
