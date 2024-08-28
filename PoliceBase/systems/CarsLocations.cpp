@@ -92,6 +92,13 @@ void CarsLocations::Load()
 
     auto path = ModConfig::GetConfigFolder() + "/vehicles/";
 
+    if(!ModConfig::DirExists(path))
+    {
+        Log::Level(LOG_LEVEL::LOG_BOTH) << "/vehicles folder does not exist, creating!" << std::endl;
+        
+        ModConfig::CreateFolder(path);
+    }
+
     auto files = ModConfig::GetFilesName(path);
     for(auto file : files)
     {
