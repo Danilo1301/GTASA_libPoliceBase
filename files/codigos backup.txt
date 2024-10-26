@@ -1,0 +1,97 @@
+static std::vector<std::string> splitStringBySpaces(const std::string& str)
+{
+    std::vector<std::string> result;
+    std::istringstream iss(str);
+    std::string word;
+
+    // Usa o istringstream para separar a string em palavras
+    while (iss >> word) {
+        result.push_back(word);
+    }
+
+    return result;
+}
+
+
+
+
+
+		std::string line;
+        while (std::getline(inputFile, line))
+        {
+            Log::Level(LOG_LEVEL::LOG_BOTH) << line << std::endl;
+
+            // MODEL_ID X Y Z ANGLE REMAP RESPAWN_TYPE
+            auto args = splitStringBySpaces(line);
+
+            for(auto arg : args)
+            {
+                Log::Level(LOG_LEVEL::LOG_BOTH) << arg << std::endl;
+            }
+
+            if(args.size() >= 4) // (MODEL_ID X Y Z) at least
+            {
+                int modelId = std::atoi(GetVehicleArg(args, 0, "522").c_str());
+                float x = std::atof(GetVehicleArg(args, 1, "0.0").c_str());
+                float y = std::atof(GetVehicleArg(args, 2, "0.0").c_str());
+                float z = std::atof(GetVehicleArg(args, 3, "0.0").c_str());
+
+                float angle = std::atof(GetVehicleArg(args, 4, "0.0").c_str());
+                std::string remap = GetVehicleArg(args, 5, "random");
+                CAR_RESPAWN_TYPE respawnType = (CAR_RESPAWN_TYPE)std::atoi(GetVehicleArg(args, 6, "0").c_str());
+                
+                Log::Level(LOG_LEVEL::LOG_BOTH) << "Adding car " << modelId << " with respawnType " << respawnType << std::endl;
+
+                CarLocation car;
+                car.modelId = modelId;
+                car.angle = angle;
+                car.position = CVector(x, y, z);
+                car.remap = remap;
+                car.respawnType = respawnType;
+                m_Locations.push_back(car);
+            } else {
+                Log::Level(LOG_LEVEL::LOG_BOTH) << "Could not create car" << std::endl;
+            }
+        }
+		
+		
+		
+		
+		
+		
+#pragma once
+
+#include "pch.h"
+
+enum CAR_RESPAWN_TYPE {
+    RESPAWN_IN_DISTANCE,
+    RESPAWN_AFTER_VEHICLE_DISAPPEARS
+};
+
+struct CarLocation {
+    int modelId;
+    float angle;
+    CVector position = CVector(0, 0, 0);
+    std::string remap;
+
+    CAR_RESPAWN_TYPE respawnType = CAR_RESPAWN_TYPE::RESPAWN_IN_DISTANCE;
+    float respawnDistance = 20.0f;
+
+    int prevVehicleSpawned = 0;
+};
+
+class CarsLocations {
+public:
+    static std::vector<CarLocation> m_Locations;
+
+    static void Init();
+    static void Update(int dt);
+    static void Load();
+};
+
+
+
+
+
+AVISO: BUG DOS VEÍCULOS NÃO SEREM RECONHECIDOS E SEREM DELETADOS
+TESTAR SEM MODS
